@@ -33,6 +33,14 @@ def exclude_cards(records):
     return filter(filter_, records)
 
 
+def exclude_bad_rows(records):
+    """
+    Workaround for philipmulcahy/azad#174.
+    """
+    filter_ = lambda row: 'Grand Total' not in row['total']
+    return filter(filter_, records)
+
+
 # from jaraco.functools
 def compose(*funcs):
     def compose_two(f1, f2):
@@ -43,7 +51,7 @@ def compose(*funcs):
 
 mapping = {
     'has_header': True,
-    'process_records': compose(exclude_cards, all_but_last),
+    'process_records': compose(exclude_cards, all_but_last, exclude_bad_rows),
     'delimiter': ',',
     'bank': 'Amazon Purchases',
     'account_id': os.environ.get('AMAZON_PURCHASES_ACCOUNT', '100000001'),
